@@ -83,17 +83,10 @@ impl App {
         let height = ui.available_height() / 6.0;
         let width = ui.available_width() / 4.0 - 5.0;
         let left_right_layout = Layout::left_to_right(egui::Align::Min);
-        let right_left_layout = Layout::right_to_left(egui::Align::Min);
         self.draw_panel(ui);
-        self.draw_number_grid(ui, [width, height], left_right_layout, right_left_layout);
+        self.draw_number_grid(ui, [width, height], left_right_layout);
     }
-    fn draw_number_grid(
-        &mut self,
-        ui: &mut egui::Ui,
-        size: [f32; 2],
-        left_right_layout: Layout,
-        right_left_layout: Layout,
-    ) {
+    fn draw_number_grid(&mut self, ui: &mut egui::Ui, size: [f32; 2], left_right_layout: Layout) {
         CentralPanel::default().show_inside(ui, |ui| {
             ui.style_mut().spacing.item_spacing.x = 3.0;
             ui.style_mut().spacing.item_spacing.y = 3.0;
@@ -110,16 +103,15 @@ impl App {
             let mut row_three = Self::create_number_buttons(1..=3u8);
             row_three.push(Self::create_button("+".to_string(), Action::Add));
             let row_four = vec![
-                Self::create_button("=".to_string(), Action::Equals),
-                Self::create_button(".".to_string(), Action::Dot),
-                Self::create_button("0".to_string(), Action::Digit(0)),
                 Self::create_button("Creator".to_string(), Action::Link),
+                Self::create_button("0".to_string(), Action::Digit(0)),
+                Self::create_button(".".to_string(), Action::Dot),
+                Self::create_button("=".to_string(), Action::Equals),
             ];
-            let rows = vec![tool_row, row_one, row_two, row_three];
+            let rows = vec![tool_row, row_one, row_two, row_three, row_four];
             for row in rows {
                 self.render_row(ui, row, size, left_right_layout);
             }
-            self.render_row(ui, row_four, size, right_left_layout);
         });
     }
     fn draw_panel(&mut self, ui: &mut egui::Ui) {
@@ -137,8 +129,9 @@ impl App {
             .fill(Color32::WHITE)
             .show(ui, |ui| {
                 ui.set_width(ui.available_width());
+                ui.set_max_width(ui.available_width());
                 ui.set_height(30.0);
-                ui.with_layout(Layout::right_to_left(egui::Align::Center), |ui| {
+                ui.with_layout(Layout::left_to_right(egui::Align::Center), |ui| {
                     ui.heading(
                         RichText::new(&self.equation)
                             .color(Color32::BLACK)
